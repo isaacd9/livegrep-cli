@@ -37,7 +37,8 @@ type QueryResponse struct {
 	AnalyzeTime int    `json:"analyze_time"`
 	Why         string `json:"why"`
 
-	Results []QueryResult `json:"results"`
+	Results     []QueryResult `json:"results"`
+	FileResults []QueryResult `json:"file_results"`
 
 	SearchType string `json:"search_type"`
 }

@@ -3,7 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
+	//"github.com/chzyer/readline"
 	"github.com/fatih/color"
+	"strconv"
 	"strings"
 )
 
@@ -22,15 +24,35 @@ func runQuery(query string) {
 		panic(err)
 	}
 
-	for _, result := range response.Results {
-		fmt.Printf("%s:%d:# %s\n",
-			result.Path, result.Lno, strings.TrimSpace(colorize(result.Line, result.Bounds)))
+	for _, result := range response.FileResults {
+		fmt.Printf("%s\n",
+			strings.TrimSpace(colorize(result.Path, result.Bounds)),
+		)
 	}
+
+	if len(response.FileResults) > 0 {
+		fmt.Printf("\n")
+	}
+
+	for _, result := range response.Results {
+		fmt.Printf("%s:%s:%s\n",
+			color.CyanString(result.Path),
+			color.YellowString(strconv.Itoa(result.Lno)),
+			strings.TrimSpace(colorize(result.Line, result.Bounds)),
+		)
+	}
+}
+
+func shell() {
 }
 
 func main() {
 	flag.Parse()
 
-	query := flag.Args()[0]
-	runQuery(query)
+	if len(flag.Args()) > 0 {
+		query := flag.Args()[0]
+		runQuery(query)
+	} else {
+		shell()
+	}
 }
