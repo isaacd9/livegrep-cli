@@ -15,7 +15,6 @@ type Query struct {
 	Term     string
 	FoldCase bool
 	Regex    bool
-	Context  bool
 }
 
 type QueryResult struct {
@@ -47,19 +46,17 @@ func (lg *Livegrep) NewQuery(q string) Query {
 	return Query{
 		Term:     q,
 		FoldCase: false,
-		Regex:    false,
-		Context:  false,
+		Regex:    true,
 	}
 }
 
 func (lg *Livegrep) Query(q Query) (QueryResponse, error) {
 	uri := fmt.Sprintf(
-		"https://%s/api/v1/search/linux?q=%s&fold_case=%t&regex=%t&context=%t",
+		"https://%s/api/v1/search/linux?q=%s&fold_case=%t&regex=%t",
 		lg.URL,
 		q.Term,
 		q.FoldCase,
 		q.Regex,
-		q.Context,
 	)
 
 	resp, err := http.Get(uri)

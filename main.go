@@ -4,17 +4,17 @@ import (
 	"flag"
 	"fmt"
 	"github.com/chzyer/readline"
-	"github.com/fatih/color"
 	"os"
-	"strconv"
-	"strings"
 )
 
 type Config struct {
-	caseSensitive      bool
+	caseInsensitive    bool
 	colorize           bool
 	contextLinesAfter  int
 	contextLinesBefore int
+	fixedStrings       bool
+	findInFilename     bool
+	findInBody         bool
 	noPrintHeaders     bool
 	numLines           int
 	pattern            string
@@ -30,7 +30,6 @@ func (sl *SearchListener) OnChange(line []rune, pos int, key rune) (newLine []ru
 	for i := 0; i < sl.written; i++ {
 		fmt.Print('\b')
 	}
-	sl.written = runQuery(string(line)) + 1
 	return line, pos, true
 }
 
@@ -64,32 +63,29 @@ func initFlags() Config {
 		0,
 		"Print num lines of leading and trailing context surrounding each match.",
 	)
-
 	flag.IntVar(
 		&c.contextLinesAfter,
 		"A",
 		0,
 		"Print num lines of trailing context after each match.",
 	)
-
 	flag.IntVar(
 		&c.contextLinesBefore,
 		"B",
 		0,
 		"Print num lines of trailing context before each match.",
 	)
-
 	flag.IntVar(
 		&c.numLines,
 		"c",
-		0,
+		-1,
 		"Only a count of selected lines is written to standard output.",
 	)
 	flag.BoolVar(
 		&c.colorize,
 		"color",
 		true,
-		"Only a count of selected lines is written to standard output.",
+		"Mark up the matching text in color",
 	)
 	flag.StringVar(
 		&c.pattern,
@@ -98,16 +94,20 @@ func initFlags() Config {
 		"Specify a pattern used during the search of the input: an input line is"+
 			"selected if it matches any of the specified patterns.",
 	)
-
+	flag.BoolVar(
+		&c.fixedStrings,
+		"F",
+		false,
+		"Interpret pattern as a set of fixed strings",
+	)
 	flag.BoolVar(
 		&c.noPrintHeaders,
 		"h",
 		false,
 		"Never print filename headers (i.e. filenames) with output lines.",
 	)
-
 	flag.BoolVar(
-		&c.caseSensitive,
+		&c.caseInsensitive,
 		"i",
 		false,
 		"Perform case insensitive matching.",
@@ -115,8 +115,20 @@ func initFlags() Config {
 	flag.BoolVar(
 		&c.printLineNumber,
 		"n",
-		false,
+		true,
 		"Each output line is preceded by its relative line number in the file.",
+	)
+	flag.BoolVar(
+		&c.findInFilename,
+		"f",
+		true,
+		"Look in the names of files for matches (like find)",
+	)
+	flag.BoolVar(
+		&c.findInBody,
+		"b",
+		true,
+		"Look in the contents of files for matches (like grep)",
 	)
 	var version bool
 	flag.BoolVar(&version, "v", false, "Print version and exit")
@@ -144,6 +156,12 @@ func main() {
 	query := flag.Args()[0]
 	l := &Livegrep{URL: "livegrep.com"}
 	q := l.NewQuery(query)
+	q.FoldCase = config.caseInsensitive
+	q.Regex = !config.fixedStrings
+
+	if len(config.pattern) > 0 {
+		q.Term = config.pattern
+	}
 
 	response, err := l.Query(q)
 	if err != nil {
