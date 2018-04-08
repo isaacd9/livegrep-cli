@@ -15,8 +15,8 @@ func colorize(str string, bounds []int) string {
 	return fmt.Sprintf("%s%s%s", fst, yellow(match), rest)
 }
 
-func buildLine(config Config, result QueryResult) string {
-	lineNoStr := strconv.Itoa(result.Lno)
+func makePrefix(config Config, result QueryResult, lineNoAdjust int) string {
+	lineNoStr := strconv.Itoa(result.Lno + lineNoAdjust)
 	var prefix string
 	var filePrefix string
 
@@ -36,9 +36,12 @@ func buildLine(config Config, result QueryResult) string {
 	} else {
 		prefix = filePrefix
 	}
+	return prefix
+}
 
+func buildLine(config Config, result QueryResult) string {
 	return fmt.Sprintf("%s%s\n",
-		prefix,
+		makePrefix(config, result, 0),
 		colorize(result.Line, result.Bounds),
 	)
 }
@@ -72,8 +75,31 @@ func Print(config Config, query Query, response QueryResponse) {
 				return
 			}
 
+			start := len(result.ContextBefore) - config.contextLinesBefore
+			if start < 0 {
+				start = 0
+			}
+			for i := start; i < len(result.ContextBefore); i++ {
+				fmt.Printf(
+					"%s%s\n",
+					makePrefix(config, result, -(len(result.ContextBefore)-i)),
+					result.ContextBefore[i],
+				)
+			}
+
 			fmt.Print(buildLine(config, result))
 			lineCount++
+
+			for i := 0; i < config.contextLinesAfter; i++ {
+				if i >= len(result.ContextAfter) {
+					break
+				}
+				fmt.Printf(
+					"%s%s\n",
+					makePrefix(config, result, i+1),
+					result.ContextAfter[i],
+				)
+			}
 		}
 	}
 }
