@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/chzyer/readline"
 	"os"
 )
 
@@ -20,38 +19,6 @@ type Config struct {
 	pattern            string
 	printFilename      bool
 	printLineNumber    bool
-}
-
-type SearchListener struct {
-	written int
-}
-
-func (sl *SearchListener) OnChange(line []rune, pos int, key rune) (newLine []rune, newPos int, ok bool) {
-	for i := 0; i < sl.written; i++ {
-		fmt.Print('\b')
-	}
-	return line, pos, true
-}
-
-func shell() {
-	rl, err := readline.NewEx(&readline.Config{
-		Prompt:          "\033[31m»\033[0m ",
-		InterruptPrompt: "^C",
-		EOFPrompt:       "exit",
-
-		Listener: &SearchListener{
-			written: 0,
-		},
-
-		HistorySearchFold: true,
-	})
-
-	if err != nil {
-		panic(err)
-	}
-	defer rl.Close()
-
-	rl.Readline()
 }
 
 func initFlags() Config {
@@ -154,7 +121,15 @@ func main() {
 	config := initFlags()
 
 	query := flag.Args()[0]
-	l := &Livegrep{URL: "livegrep.com"}
+
+	var url string
+	if os.Getenv("LIVEGREP_URL") != "" {
+		url = os.Getenv("LIVEGREP_URL")
+	} else {
+		url = "livegrep.com"
+	}
+
+	l := &Livegrep{URL: url}
 	q := l.NewQuery(query)
 	q.FoldCase = config.caseInsensitive
 	q.Regex = !config.fixedStrings
