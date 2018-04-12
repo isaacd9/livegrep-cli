@@ -1,5 +1,4 @@
 # Livegrep-CLI
-## Isaac Diamond
 
 Livegrep-CLI is a command line interface for the
 [Livegrep](https://github.com/livegrep/livegrep) tool.
