@@ -22,7 +22,7 @@ type Config struct {
 	numLines           int
 	pattern            string
 	printFilename      bool
-	printLineNumber    bool
+	noPrintLineNumber  bool
 }
 
 func initFlags() Config {
@@ -84,10 +84,10 @@ func initFlags() Config {
 		"Perform case insensitive matching.",
 	)
 	flag.BoolVar(
-		&c.printLineNumber,
-		"n",
-		true,
-		"Each output line is preceded by its relative line number in the file.",
+		&c.noPrintLineNumber,
+		"N",
+		false,
+		"Do not precede each output line is by its relative line number in the file.",
 	)
 	flag.BoolVar(
 		&c.findInFilename,

@@ -25,7 +25,7 @@ the `LIVEGREP_URL` environment variable.
 $ LIVEGREP_URL=livegrep.com ./livegrep-cli $query
 ```
 
-command line flags are intended to be at least mostly
+Command line flags are intended to be at least mostly
 compatible with familiar flags from `grep` and `ag` [The Silver
 Searcher](https://github.com/ggreer/the_silver_searcher).
 

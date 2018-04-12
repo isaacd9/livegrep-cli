@@ -28,7 +28,7 @@ func makePrefix(config Config, result QueryResult, lineNoAdjust int) string {
 	}
 
 	yellow := color.New(color.FgYellow, color.Bold).SprintFunc()
-	if config.printLineNumber {
+	if !config.noPrintLineNumber {
 		prefix = fmt.Sprintf("%s%s:",
 			filePrefix,
 			yellow(lineNoStr),
