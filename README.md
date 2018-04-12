@@ -31,11 +31,11 @@ compatible with familiar flags from `grep` and `ag` [The Silver
 Searcher](https://github.com/ggreer/the_silver_searcher).
 
 Supported environment variables:
-`LIVEGREP_HOST` sets the url that Livegrep should use (by default
+- `LIVEGREP_HOST` sets the url that Livegrep should use (by default
 [livegrep.com](https://livegrep.com).
-`LIVEGREP_USE_HTTPS` determines whether Livegrep should use https
+- `LIVEGREP_USE_HTTPS` determines whether Livegrep should use https
 (By default HTTPS is enabled).
-`LIVEGREP_UNIX_SOCKET` allows you to proxy traffic through a
+- `LIVEGREP_UNIX_SOCKET` allows you to proxy traffic through a
 local Unix socket.
 
 
