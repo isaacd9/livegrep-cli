@@ -1,7 +1,7 @@
-# Livegrep-CLI
+# 🔍Livegrep-CLI🔍
 
 Livegrep-CLI is a command line interface for the
-[Livegrep](https://github.com/livegrep/livegrep) tool.
+[Livegrep](https://github.com/livegrep/livegrep) tool. ⚡
 
 ## Why?
 Livegrep is a popular code-search tool used by many organizations to search
