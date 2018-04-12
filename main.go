@@ -92,13 +92,13 @@ func initFlags() Config {
 	flag.BoolVar(
 		&c.findInFilename,
 		"f",
-		true,
+		false,
 		"Look in the names of files for matches (like find)",
 	)
 	flag.BoolVar(
 		&c.findInBody,
 		"b",
-		true,
+		false,
 		"Look in the contents of files for matches (like grep)",
 	)
 	var version bool

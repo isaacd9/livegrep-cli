@@ -51,7 +51,7 @@ func Print(config Config, query Query, response QueryResponse) {
 	color.NoColor = !config.colorize
 	lineCount := 0
 
-	if config.findInFilename {
+	if !config.findInBody {
 		for _, result := range response.FileResults {
 			if config.numLines >= 0 && lineCount >= config.numLines {
 				return
@@ -64,13 +64,13 @@ func Print(config Config, query Query, response QueryResponse) {
 		}
 	}
 
-	if config.findInFilename && config.findInBody {
+	if config.findInFilename && config.findInBody && len(response.Results) > 0 {
 		if len(response.FileResults) > 0 {
 			fmt.Printf("\n")
 		}
 	}
 
-	if config.findInBody {
+	if !config.findInFilename {
 		for _, result := range response.Results {
 			if config.numLines >= 0 && lineCount >= config.numLines {
 				return
