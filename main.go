@@ -9,6 +9,7 @@ import (
 	"os"
 )
 
+// Config represents the configuration of the CLI tool
 type Config struct {
 	caseInsensitive    bool
 	colorize           bool
@@ -128,14 +129,14 @@ func main() {
 	}
 
 	query := flag.Args()[0]
-	var url string
-	if os.Getenv("LIVEGREP_URL") != "" {
-		url = os.Getenv("LIVEGREP_URL")
+	var host string
+	if os.Getenv("LIVEGREP_HOST") != "" {
+		host = os.Getenv("LIVEGREP_HOST")
 	} else {
-		url = "livegrep.com"
+		host = "livegrep.com"
 	}
 
-	l := NewLivegrep(url)
+	l := NewLivegrep(host)
 	if os.Getenv("LIVEGREP_USE_HTTPS") != "" {
 		l.UseHTTPS = true
 	}

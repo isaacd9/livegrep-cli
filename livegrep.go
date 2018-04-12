@@ -5,20 +5,26 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 )
 
+const livegrepPath = "/api/v1/search"
+
+// Livegrep is a client object for connecting to a Livegrep instance
 type Livegrep struct {
-	URL      string
+	Host     string
 	UseHTTPS bool
 	Client   *http.Client
 }
 
+// Query represents a single query against a Livegrep instance
 type Query struct {
 	Term     string
 	FoldCase bool
 	Regex    bool
 }
 
+// QueryResult is a single match in a result from Livegrep
 type QueryResult struct {
 	Tree          string   `json:"tree"`
 	Version       string   `json:"version"`
@@ -30,6 +36,7 @@ type QueryResult struct {
 	Bounds        []int    `json:"bounds"`
 }
 
+// QueryResponse is the overall result from a query against a Livegrep instance
 type QueryResponse struct {
 	Re2Tme      int    `json:"re2_time"`
 	GitTme      int    `json:"git_time"`
@@ -44,14 +51,16 @@ type QueryResponse struct {
 	SearchType string `json:"search_type"`
 }
 
-func NewLivegrep(url string) Livegrep {
+// NewLivegrep returns a new Livegrep client
+func NewLivegrep(host string) Livegrep {
 	return Livegrep{
-		URL:      url,
+		Host:     host,
 		UseHTTPS: true,
 		Client:   &http.Client{},
 	}
 }
 
+// NewQuery returns a new query for Livegrep
 func (lg *Livegrep) NewQuery(q string) Query {
 	return Query{
 		Term:     q,
@@ -60,6 +69,7 @@ func (lg *Livegrep) NewQuery(q string) Query {
 	}
 }
 
+// Query runs the specified Query against the given Livegrep instance
 func (lg *Livegrep) Query(q Query) (QueryResponse, error) {
 	var protocol string
 	if lg.UseHTTPS {
@@ -67,16 +77,22 @@ func (lg *Livegrep) Query(q Query) (QueryResponse, error) {
 	} else {
 		protocol = "http"
 	}
-	uri := fmt.Sprintf(
-		"%s://%s/api/v1/search/linux?q=%s&fold_case=%t&regex=%t",
-		protocol,
-		lg.URL,
+
+	query := fmt.Sprintf(
+		"q=%s&fold_case=%t&regex=%t",
 		q.Term,
 		q.FoldCase,
 		q.Regex,
 	)
 
-	resp, err := lg.Client.Get(uri)
+	uri := &url.URL{
+		Scheme:   protocol,
+		Host:     lg.Host,
+		Path:     livegrepPath,
+		RawQuery: query,
+	}
+
+	resp, err := lg.Client.Get(uri.String())
 	if err != nil {
 		return QueryResponse{}, err
 	}

@@ -46,6 +46,7 @@ func buildLine(config Config, result QueryResult) string {
 	)
 }
 
+// Print prints baesed on a CLI config
 func Print(config Config, query Query, response QueryResponse) {
 	color.NoColor = !config.colorize
 	lineCount := 0
