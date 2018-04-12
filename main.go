@@ -137,8 +137,8 @@ func main() {
 	}
 
 	l := NewLivegrep(host)
-	if os.Getenv("LIVEGREP_USE_HTTPS") != "" {
-		l.UseHTTPS = true
+	if os.Getenv("LIVEGREP_USE_HTTPS") == "false" {
+		l.UseHTTPS = false
 	}
 
 	unixSocket := os.Getenv("LIVEGREP_UNIX_SOCKET")
