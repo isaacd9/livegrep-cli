@@ -8,7 +8,9 @@ import (
 )
 
 type Livegrep struct {
-	URL string
+	URL      string
+	UseHTTPS bool
+	Client   *http.Client
 }
 
 type Query struct {
@@ -42,6 +44,14 @@ type QueryResponse struct {
 	SearchType string `json:"search_type"`
 }
 
+func NewLivegrep(url string) Livegrep {
+	return Livegrep{
+		URL:      url,
+		UseHTTPS: true,
+		Client:   &http.Client{},
+	}
+}
+
 func (lg *Livegrep) NewQuery(q string) Query {
 	return Query{
 		Term:     q,
@@ -51,15 +61,22 @@ func (lg *Livegrep) NewQuery(q string) Query {
 }
 
 func (lg *Livegrep) Query(q Query) (QueryResponse, error) {
+	var protocol string
+	if lg.UseHTTPS {
+		protocol = "https"
+	} else {
+		protocol = "http"
+	}
 	uri := fmt.Sprintf(
-		"https://%s/api/v1/search/linux?q=%s&fold_case=%t&regex=%t",
+		"%s://%s/api/v1/search/linux?q=%s&fold_case=%t&regex=%t",
+		protocol,
 		lg.URL,
 		q.Term,
 		q.FoldCase,
 		q.Regex,
 	)
 
-	resp, err := http.Get(uri)
+	resp, err := lg.Client.Get(uri)
 	if err != nil {
 		return QueryResponse{}, err
 	}

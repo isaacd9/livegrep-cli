@@ -1,8 +1,11 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
+	"net"
+	"net/http"
 	"os"
 )
 
@@ -120,8 +123,11 @@ func initFlags() Config {
 func main() {
 	config := initFlags()
 
-	query := flag.Args()[0]
+	if len(flag.Args()) == 0 {
+		os.Exit(0)
+	}
 
+	query := flag.Args()[0]
 	var url string
 	if os.Getenv("LIVEGREP_URL") != "" {
 		url = os.Getenv("LIVEGREP_URL")
@@ -129,8 +135,28 @@ func main() {
 		url = "livegrep.com"
 	}
 
-	l := &Livegrep{URL: url}
+	l := NewLivegrep(url)
+	if os.Getenv("LIVEGREP_USE_HTTPS") != "" {
+		l.UseHTTPS = true
+	}
+
+	unixSocket := os.Getenv("LIVEGREP_UNIX_SOCKET")
+	if unixSocket != "" {
+		transport := &http.Transport{
+			DialContext: func(_ context.Context, _, _ string) (net.Conn, error) {
+				return net.Dial("unix", unixSocket)
+			},
+		}
+
+		httpClient := &http.Client{
+			Transport: transport,
+		}
+
+		l.Client = httpClient
+	}
+
 	q := l.NewQuery(query)
+
 	q.FoldCase = config.caseInsensitive
 	q.Regex = !config.fixedStrings
 
