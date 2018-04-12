@@ -38,3 +38,5 @@ Supported environment variables:
 `LIVEGREP_UNIX_SOCKET` allows you to proxy traffic through a
 local Unix socket.
 
+
+Copyright 2018 Isaac Diamond. Released under the MIT license.
