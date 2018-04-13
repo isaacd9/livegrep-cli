@@ -16,14 +16,15 @@ type Config struct {
 	colorize           bool
 	contextLinesAfter  int
 	contextLinesBefore int
-	fixedStrings       bool
-	findInFilename     bool
 	findInBody         bool
+	findInFilename     bool
+	fixedStrings       bool
 	noPrintHeaders     bool
+	noPrintLineNumber  bool
 	numLines           int
 	pattern            string
 	printFilename      bool
-	noPrintLineNumber  bool
+	printTree          bool
 }
 
 func initFlags() Config {
@@ -101,6 +102,12 @@ func initFlags() Config {
 		"b",
 		false,
 		"Look in the contents of files for matches (like grep)",
+	)
+	flag.BoolVar(
+		&c.printTree,
+		"t",
+		false,
+		"Print tree in addition to file path",
 	)
 	var version bool
 	flag.BoolVar(&version, "v", false, "Print version and exit")

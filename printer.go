@@ -7,31 +7,43 @@ import (
 	"strings"
 )
 
+var bgYellow = color.New(color.BgYellow).SprintFunc()
+var fgYellow = color.New(color.FgYellow).SprintFunc()
+var cyan = color.New(color.FgCyan, color.Bold).SprintFunc()
+
 func colorize(str string, bounds []int) string {
 	fst := str[0:bounds[0]]
 	match := str[bounds[0]:bounds[1]]
 	rest := str[bounds[1]:]
-	yellow := color.New(color.BgYellow).SprintFunc()
-	return fmt.Sprintf("%s%s%s", fst, yellow(match), rest)
+	return fmt.Sprintf("%s%s%s", fst, bgYellow(match), rest)
 }
 
 func makePrefix(config Config, result QueryResult, lineNoAdjust int) string {
 	lineNoStr := strconv.Itoa(result.Lno + lineNoAdjust)
 	var prefix string
 	var filePrefix string
+	var treePrefix string
 
-	cyan := color.New(color.FgCyan, color.Bold).SprintFunc()
-	if !config.noPrintHeaders {
-		filePrefix = fmt.Sprintf("%s:", cyan(result.Path))
+	if config.printTree {
+		treePrefix = cyan(result.Tree) + " "
 	} else {
 		filePrefix = ""
 	}
 
-	yellow := color.New(color.FgYellow, color.Bold).SprintFunc()
+	if !config.noPrintHeaders {
+		filePrefix = fmt.Sprintf(
+			"%s%s:",
+			treePrefix,
+			cyan(result.Path),
+		)
+	} else {
+		filePrefix = ""
+	}
+
 	if !config.noPrintLineNumber {
 		prefix = fmt.Sprintf("%s%s:",
 			filePrefix,
-			yellow(lineNoStr),
+			fgYellow(lineNoStr),
 		)
 	} else {
 		prefix = filePrefix
