@@ -8,7 +8,19 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"strings"
 )
+
+type repositoriesList []string
+
+func (r *repositoriesList) String() string {
+	return strings.Join(*r, ",")
+}
+
+func (r *repositoriesList) Set(value string) error {
+	*r = append(*r, value)
+	return nil
+}
 
 // Config represents the configuration of the CLI tool
 type Config struct {
@@ -25,6 +37,7 @@ type Config struct {
 	pattern            string
 	printFilename      bool
 	printTree          bool
+	repositories       repositoriesList
 }
 
 func initFlags() Config {
@@ -109,6 +122,11 @@ func initFlags() Config {
 		false,
 		"Print tree in addition to file path",
 	)
+	flag.Var(
+		&c.repositories,
+		"r",
+		"Repositories to search in. Specify -r multiple times to specify a list of repositories.",
+	)
 	var version bool
 	flag.BoolVar(&version, "v", false, "Print version and exit")
 
@@ -137,6 +155,7 @@ func main() {
 	}
 
 	query := flag.Args()[0]
+
 	var host string
 	if os.Getenv("LIVEGREP_HOST") != "" {
 		host = os.Getenv("LIVEGREP_HOST")
@@ -165,6 +184,7 @@ func main() {
 	}
 
 	q := l.NewQuery(query)
+	q.Repositories = config.repositories
 
 	q.FoldCase = config.caseInsensitive
 	q.Regex = !config.fixedStrings

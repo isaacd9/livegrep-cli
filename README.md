@@ -6,9 +6,10 @@ Livegrep-CLI is a command line interface for the
 ## Why?
 Livegrep is a popular code-search tool used by many organizations to search
 across their code. A public instance (that searches within the Linux kernel
-source code) can be found at [https://livegrep.com/](https://livegrep.com). I
-couldn't find a CLI tool that provided the set of configurable options I wanted
-so I decided to write one myself. :)
+source code) can be found at [https://livegrep.com/](https://livegrep.com).
+There's an offical CLI tool for this, but I couldn't find a CLI tool that
+provided the set of configurable options I wanted so I decided to write one
+myself. :)
 
 This is my first Golang project of any substance, so please
 excuse any mistakes or non-idiomatic code. Please open an issue

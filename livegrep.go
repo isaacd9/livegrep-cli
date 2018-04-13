@@ -19,9 +19,10 @@ type Livegrep struct {
 
 // Query represents a single query against a Livegrep instance
 type Query struct {
-	Term     string
-	FoldCase bool
-	Regex    bool
+	Term         string
+	FoldCase     bool
+	Regex        bool
+	Repositories []string
 }
 
 // QueryResult is a single match in a result from Livegrep
@@ -84,6 +85,13 @@ func (lg *Livegrep) Query(q Query) (QueryResponse, error) {
 		q.FoldCase,
 		q.Regex,
 	)
+
+	for _, repo := range q.Repositories {
+		query += fmt.Sprintf(
+			"&repo[]=%s",
+			repo,
+		)
+	}
 
 	uri := &url.URL{
 		Scheme:   protocol,
