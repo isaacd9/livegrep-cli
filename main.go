@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"log"
 	"net"
 	"net/http"
 	"os"
@@ -167,7 +168,7 @@ func main() {
 
 	response, err := l.Query(q)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 
 	Print(config, q, response)
